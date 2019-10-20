@@ -1,0 +1,1 @@
+# Distributed-Typosquatting-Detector
