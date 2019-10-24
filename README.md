@@ -17,6 +17,7 @@ Takes the list of generated typo URLs and queries each one to determine if they 
 ### Prerequisites
 ```
 Python Version: 3.7.4-buster (https://www.python.org/downloads/)
+Flash (pip install Flask)
 ```
 
 ## Authors
