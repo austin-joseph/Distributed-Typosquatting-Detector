@@ -14,14 +14,17 @@ submitted_urls = {}
 #map of each sub url to related data
 generated_urls_lock = threading.Lock()
 generated_urls = {}
-# generated_urls = []
-
 
 @app.route("/")
 def index():
     return app.send_static_file("index.html")
 
+@app.route("/image/<string:url>")
+def image(url):
+    return flask.send_from_directory("images", url)
+
 @app.route("/view", methods=["POST"])
+
 def viewResults():
     # if the url exists in our existing data send back that data. IF it doesnt exist find it.
     output = {}
@@ -93,5 +96,4 @@ except:
     print("Error: unable to start thread")
 
 if __name__ == "__main__":
-
     app.run(port="5000", threaded=True)
