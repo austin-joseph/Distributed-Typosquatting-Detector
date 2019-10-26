@@ -1,26 +1,29 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
     <meta charset="utf-8">
     <title>Distrubuted Typosquatting Detector</title>
+    <script src="/jquery/jquery.min.js"></script>
+    <script src="/js/index.js"></script>
 </head>
 
 <body>
     <h1>Home</h1>
     <p>
-        Welcome to Distrubuted Typosquatting Detector here you can submit a url and we will find as many possible typo
-        squatting alternatives that we can.
+        Welcome to Distrubuted Typosquatting Detector here you can submit a url and we will find as many possible typo squatting alternatives that we can.
     </p>
 
-    <form action="/submit" method="GET">
+    <div id="submit_block">
         Submit URL:
-        <br>
-        <input type="text" name="url"><br>
-        <input type="submit" value="Submit" onclick="window.location.href=google.com;">
-    </form>
+        <input type="text" id="textbox_url"><br>
+        <input type="submit" id="submit_button" , value="Submit">
+    </div>
 
-    <p></p>
+    <div id="url_table"></div>
+
+    <div id="url_data"></div>
+
 </body>
 
 </html>
