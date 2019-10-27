@@ -8,10 +8,8 @@ app = flask.Flask(__name__, static_url_path='', static_folder='static/')
 
 new_urls_lock = threading.Lock()
 new_urls = []
-#map of url to a list of the sub urls that exist
 submitted_urls_lock = threading.Lock()
 submitted_urls = {}
-#map of each sub url to related data
 generated_urls_lock = threading.Lock()
 generated_urls = {}
 
@@ -51,9 +49,12 @@ def viewResults():
     generated_urls_lock.release()
     return json.dumps(output, sort_keys=True, default=str)
 
+#TODO input a single url in the form of a string. Output a list of valid urls. The output may or may not include the startign url. The output url list should be generated using the paper thats linked in the assignment document 
 def generateURLs(start_url):
     return [start_url]
 
+#TODO input a single url in the form of a string. Utilize Selenium query the webpage. The results of the query are saved as an array that should be added to "generated_urls" dict in the format of generated_urls[url]=output array
+# The format of hte output array should be [http response code, the datetime the query occured, a string url of the saved image so that it can be requsted by the website when it needs ot be rendered.]
 def checkURL(url):
     generated_urls_lock.acquire()    
     generated_urls[url] = [200, datetime.datetime.utcnow(), "The Image Doesnt Exist"]
@@ -68,26 +69,28 @@ def scheduler():
         if len(new_urls) <= 0:            
             new_urls_lock.release()
             continue
-        url = new_urls.pop(0)
+        listCopy = new_urls.copy()
+        new_urls.clear()
         new_urls_lock.release()
 
-        generatedUrls = None
-        submitted_urls_lock.acquire()
-        if url in submitted_urls:            
-            #compare current date to the last time we checked. If more than a day has passed redo the sub url generation
-            if currentDateTime - submitted_urls[url][1] > datetime.timedelta(days=1):
+        for url in listCopy:        
+            generatedUrls = None
+            submitted_urls_lock.acquire()
+            if url in submitted_urls:            
+                #compare current date to the last time we checked. If more than a day has passed redo the sub url generation
+                if currentDateTime - submitted_urls[url][1] > datetime.timedelta(days=1):
+                    generatedUrls = generateURLs(url)
+                    submitted_urls[url][0] = generatedUrls
+                    submitted_urls[url][1] = datetime.datetime.utcnow()
+            else:            
                 generatedUrls = generateURLs(url)
-                submitted_urls[url][0] = generatedUrls
-                submitted_urls[url][1] = datetime.datetime.utcnow()
-        else:            
-            generatedUrls = generateURLs(url)
-            submitted_urls[url] = [generatedUrls, datetime.datetime.utcnow()]
-        submitted_urls_lock.release()
+                submitted_urls[url] = [generatedUrls, datetime.datetime.utcnow()]
+            submitted_urls_lock.release()
 
-        if generatedUrls != None and len(generatedUrls) > 0:
-            for x in generatedUrls:
-                newThread = threading.Thread(target=checkURL, args=(x,), name="Checking: " + x)
-                newThread.start()
+            if generatedUrls != None and len(generatedUrls) > 0:
+                for x in generatedUrls:
+                    newThread = threading.Thread(target=checkURL, args=(x,), name="Checking: " + x)
+                    newThread.start()
 
 try:
     t = threading.Thread(target=scheduler, name="Scheduler")

@@ -9,7 +9,7 @@ function loadUrlData(url) {
             var data = JSON.parse(data);
             // console.log(data);
             if (data == null || !data.done) {
-                setTimeout(loadUrlData(url), 1000);
+                setTimeout(loadUrlData(url), 5000);
                 count = count + 1;
                 return;
             } else {
@@ -21,9 +21,9 @@ function loadUrlData(url) {
 
 function updateDisplay(newUrl) {
     if (urlList[newUrl] == null) {
-        $("#url_table").html("Sent the url to the server but the servers still processing");
+        $("#url_table").html("We are loading your data please give us a moment");
     } else {
-        $("#url_table").html("The url data has been loaded");
+        $("#url_table").html("We have loaded you data");
     }
 }
 
