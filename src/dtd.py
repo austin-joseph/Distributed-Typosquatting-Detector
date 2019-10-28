@@ -19,7 +19,7 @@ def index():
 
 @app.route("/image/<string:url>")
 def image(url):
-    return flask.send_from_directory("./images", url)
+    return flask.send_from_directory("images", url)
 
 @app.route("/view", methods=["POST"])
 
