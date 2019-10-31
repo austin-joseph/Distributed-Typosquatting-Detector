@@ -22,7 +22,6 @@ def image(url):
     return flask.send_from_directory("images", url)
 
 @app.route("/view", methods=["POST"])
-
 def viewResults():
     # if the url exists in our existing data send back that data. IF it doesnt exist find it.
     output = {}
@@ -61,7 +60,6 @@ def checkURL(url):
     generated_urls_lock.release()
 
 def scheduler():
-    shutdown = False
     currentDateTime = datetime.datetime.utcnow()
     while(True):
         time.sleep(1)
