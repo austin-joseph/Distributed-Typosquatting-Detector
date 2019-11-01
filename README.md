@@ -18,6 +18,7 @@ Takes the list of generated typo URLs and queries each one to determine if they 
 ```
 Python Version: 3.7.4-buster (https://www.python.org/downloads/)
 Flash (pip install Flask)
+dotenv (pip3 install -U python-dotenv for python 3.x or pip install -U python-dotenv for python 2.x)
 ```
 
 ## Authors
