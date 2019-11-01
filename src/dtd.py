@@ -3,8 +3,11 @@ import time
 import datetime
 import threading
 import json
+from dotenv import load_dotenv
+import os
+load_dotenv()
 
-app = flask.Flask(__name__, static_url_path='', static_folder='static/')
+app = flask.Flask(__name__, static_url_path='', static_folder=os.getenv("STATIC_FOLDER"))
 
 new_urls_lock = threading.Lock()
 new_urls = []
@@ -15,19 +18,19 @@ generated_urls = {}
 
 @app.route("/")
 def index():
-    return app.send_static_file("index.html")
+    return app.send_static_file("new_index.html")
 
 @app.route("/image/<string:url>")
 def image(url):
     return flask.send_from_directory("images", url)
 
 @app.route("/view", methods=["POST"])
-
 def viewResults():
+    if(os.getenv("VERBOSE") == "True"):
+        print("Recieve form data {}".format(flask.request.form))
     # if the url exists in our existing data send back that data. IF it doesnt exist find it.
     output = {}
     givenUrl = flask.request.form["url"]
-
     submitted_urls_lock.acquire()
     generated_urls_lock.acquire()
     if givenUrl in submitted_urls:
@@ -48,6 +51,15 @@ def viewResults():
     submitted_urls_lock.release()
     generated_urls_lock.release()
     return json.dumps(output, sort_keys=True, default=str)
+
+# to disable the annoying cache
+@app.after_request
+def add_header(r):
+    r.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    r.headers["Pragma"] = "no-cache"
+    r.headers["Expires"] = "0"
+    r.headers['Cache-Control'] = 'public, max-age=0'
+    return r
 
 #TODO input a single url in the form of a string. Output a list of valid urls. The output may or may not include the startign url. The output url list should be generated using the paper thats linked in the assignment document 
 def generateURLs(start_url):
@@ -99,4 +111,7 @@ except:
     print("Error: unable to start thread")
 
 if __name__ == "__main__":
-    app.run(port="5000", threaded=True)
+    app.run(port=os.getenv("PORT"), threaded=True, debug=(os.getenv("DEBUG") == 'True'))
+    if(os.getenv("VERBOSE") == 'True'):
+        print("Server started on port {}".format(os.getenv("PORT")))
+
