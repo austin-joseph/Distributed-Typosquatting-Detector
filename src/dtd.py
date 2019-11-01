@@ -73,7 +73,6 @@ def checkURL(url):
     generated_urls_lock.release()
 
 def scheduler():
-    shutdown = False
     currentDateTime = datetime.datetime.utcnow()
     while(True):
         time.sleep(1)
