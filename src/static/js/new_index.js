@@ -18,7 +18,7 @@ function submit_handler(event){
     new_url.html(new_url.html().replace("dummy.com", url));
     new_url.find('span').hide();
     $('#url_list').append(new_url);
-    timerID[url] = setInterval(() => submit_url(url), 2000);
+    timerID[url] = setInterval(() => submit_url(url), 1000);
 }
 
 async function submit_url(url){
