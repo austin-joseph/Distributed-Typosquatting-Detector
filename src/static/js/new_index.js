@@ -13,6 +13,10 @@ function submit_handler(event){
         alert('You need to enter a valid url first');
         return;
     }
+    if(url in timerID){
+        alert("url is already submitted");
+        return;
+    }
     let new_url = window.dummy_url.clone();
     new_url.attr("id", url);
     new_url.html(new_url.html().replace("dummy.com", url));
@@ -33,7 +37,6 @@ async function submit_url(url){
         });
 
         let response_json = await response.json();
-        console.log(response_json);
         if(!response_json.done){
             return;
         }
