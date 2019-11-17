@@ -1,0 +1,14 @@
+{
+    "logging": true,
+    "flask": {
+        "static_folder": "static/",
+        "port": 5000
+    },
+    "database": {
+        "host": "127.0.0.1",
+        "port": "3306",
+        "database": "dtd",
+        "user": "dtd_slave",
+        "password": "dtd_slave"
+    }
+}
