@@ -1,40 +1,48 @@
-var urlList = {};
-var count = 0;
+document.addEventListener('DOMContentLoaded', init);
+const timerID = {};
 
-function loadUrlData(url) {
-    $.post("/view", {
-            url: url
-        },
-        function(data) {
-            var data = JSON.parse(data);
-            // console.log(data);
-            if (data == null || !data.done) {
-                setTimeout(loadUrlData(url), 5000);
-                count = count + 1;
-                return;
-            } else {
-                urlList[url] = data;
-                updateDisplay(url)
-            }
-        });
+function init() {
+    window.dummy_url = $('#dummy_url');
+    window.dummy_url.detach();
+    $('#submit_btn').click(submit_handler);
 }
 
-function updateDisplay(newUrl) {
-    if (urlList[newUrl] == null) {
-        $("#url_table").html("We are loading your data please give us a moment");
-    } else {
-        $("#url_table").html("We have loaded you data");
+function submit_handler(event) {
+    let url = $('#search').val();
+    if (url === '' || url.includes(' ')) {
+        alert('You need to enter a valid url first');
+        return;
+    }
+    // if(url in timerID){
+    //     alert("url is already submitted");
+    //     return;
+    // }
+    let new_url = window.dummy_url.clone();
+    new_url.attr("id", url);
+    new_url.html(new_url.html().replace("dummy.com", url));
+    new_url.find('span').hide();
+    $('#url_list').append(new_url);
+    timerID[url] = setInterval(() => submit_url(url), 1000);
+}
+
+
+async function submit_url(url) {
+    try {
+        let form_data = new FormData();
+        form_data.append("url", url);
+
+        let response = await fetch('/view', {
+            method: "POST",
+            body: form_data
+        });
+
+        let response_json = await response.json();
+        // if (!response_json.error == 0) {
+        //     return;
+        // }
+        // $(`#${url}`).find('span').show();
+        clearInterval(timerID[url]);
+    } catch (err) {
+        alert(`Encounters this message ${err.message}`);
     }
 }
-
-$(document).ready(function() {
-    $("#submit_button").click(function() {
-        var newUrl = $("#textbox_url").val();
-        if (newUrl != "") {
-            if (urlList[newUrl] == null) {
-                loadUrlData(newUrl);
-            }
-            updateDisplay(newUrl)
-        }
-    });
-});
