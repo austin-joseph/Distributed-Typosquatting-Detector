@@ -2,6 +2,7 @@
     "logging": true,
     "flask": {
         "static_folder": "static/",
+        "image_folder": "src/images",
         "port": 5000
     },
     "database": {
