@@ -22,10 +22,15 @@ cnx = None
 def index():
     return app.send_static_file("index.html")
 
-
 @app.route("/image/<string:url>")
-def serveImage(url):
-    return flask.send_from_directory("images", url)
+def image(url):
+    try:
+        print(configFile["flask"]["image_folder"]+"/"+url+".image")
+        with open(configFile["flask"]["image_folder"]+"/"+url+".image", 'rb') as file:
+            fileBytes = file.read()
+            return app.response_class(fileBytes, mimetype="image/png")
+    except IOError: 
+        return None
 
 @app.route("/view", methods=["POST"])
 def viewResults():

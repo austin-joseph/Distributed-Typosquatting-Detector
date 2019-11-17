@@ -19,7 +19,6 @@ cnx = None
 # The format of hte output array should be [http response code, the binary data of the saved image so that it can saved by the application and served when the user calls for it.]
 def checkURL(url):
     return [9999, None]
-    
 
 def loop():
     cursor = cnx.cursor(buffered=True)
