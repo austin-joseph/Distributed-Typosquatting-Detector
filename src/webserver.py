@@ -24,13 +24,13 @@ def index():
 
 @app.route("/image/<string:url>")
 def image(url):
-    try:
-        print(configFile["flask"]["image_folder"]+"/"+url+".image")
-        with open(configFile["flask"]["image_folder"]+"/"+url+".image", 'rb') as file:
-            fileBytes = file.read()
-            return app.response_class(fileBytes, mimetype="image/png")
-    except IOError: 
-        return None
+    cursor = cnx.cursor()
+    cursor.execute("SELECT generated_image FROM generatedUrls WHERE generated_url=%s", (givenUrl,))
+    for x in cursor:
+        if x[0] == None:            
+            return "" 
+        else:
+            return app.response_class(x[0], mimetype="image/png")
 
 @app.route("/view", methods=["POST"])
 def viewResults():
