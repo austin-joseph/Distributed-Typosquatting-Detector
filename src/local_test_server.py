@@ -3,11 +3,19 @@ import time
 import datetime
 import threading
 import json
-from dotenv import load_dotenv
-import os
-load_dotenv()
+import sys
 
-app = flask.Flask(__name__, static_url_path='', static_folder=os.getenv("STATIC_FOLDER"))
+if len(sys.argv) < 2:
+    print("Required Args: config.json")
+    exit()
+with open(sys.argv[1]) as configHandle:
+    configFile = json.load(configHandle)
+if configFile == None:
+    print("Error loading config file aborting")
+    exit()
+
+app = flask.Flask(__name__, static_url_path='',
+                  static_folder=configFile["flask"]["static_folder"])
 
 new_urls_lock = threading.Lock()
 new_urls = []
@@ -18,61 +26,81 @@ generated_urls = {}
 
 @app.route("/")
 def index():
-    return app.send_static_file("new_index.html")
+    return app.send_static_file("index.html")
 
 @app.route("/image/<string:url>")
 def image(url):
-    return flask.send_from_directory("images", url)
+    try:
+        print(configFile["flask"]["image_folder"]+"/"+url+".image")
+        with open(configFile["flask"]["image_folder"]+"/"+url+".image", 'rb') as file:
+            fileBytes = file.read()
+            return app.response_class(fileBytes, mimetype="image/png")
+    except IOError: 
+        return None
+    # return flask.send_from_directory("images", url+".image")
 
 @app.route("/view", methods=["POST"])
+
 def viewResults():
-    if(os.getenv("VERBOSE") == "True"):
-        print("Recieve form data {}".format(flask.request.form))
     # if the url exists in our existing data send back that data. IF it doesnt exist find it.
-    output = {}
     givenUrl = flask.request.form["url"]
+    responseJson = {}
+    responseJson["error"] = 0
+    responseJson["inputUrl"] = givenUrl
+
     submitted_urls_lock.acquire()
     generated_urls_lock.acquire()
     if givenUrl in submitted_urls:
         searchList = submitted_urls[givenUrl][0]
-        tempDict = {}
+        urlQueryResults = []
         for x in searchList:
-            tempDict[x]=(generated_urls[x])
-        output["urls"]=searchList
-        output["data"]=tempDict
-        output["done"] = True
+            urlQueryResults.append(
+                 {
+                    "generated_url" : x,
+                    "http_response_code":generated_urls[x][0],
+					"generated_image" : "/image/" + x
+                }
+            )
+        responseJson["generatedUrls"]=searchList
+        responseJson["urlQueryResults"]=urlQueryResults
     else:
         new_urls_lock.acquire()
         if  givenUrl not in new_urls:
             new_urls.append(givenUrl)
-        new_urls_lock.release()
-        output["done"] = False
+        new_urls_lock.release()        
+        responseJson["error"] = 1
 
     submitted_urls_lock.release()
     generated_urls_lock.release()
-    return json.dumps(output, sort_keys=True, default=str)
-
-# to disable the annoying cache
-@app.after_request
-def add_header(r):
-    r.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
-    r.headers["Pragma"] = "no-cache"
-    r.headers["Expires"] = "0"
-    r.headers['Cache-Control'] = 'public, max-age=0'
-    return r
+    return json.dumps(responseJson, sort_keys=True, default=str)
 
 #TODO input a single url in the form of a string. Output a list of valid urls. The output may or may not include the startign url. The output url list should be generated using the paper thats linked in the assignment document 
 def generateURLs(start_url):
-    return [start_url]
+    output = []
+    for x in range(50):
+        output.append(start_url + str(x))
+    return output
 
 #TODO input a single url in the form of a string. Utilize Selenium query the webpage. The results of the query are saved as an array that should be added to "generated_urls" dict in the format of generated_urls[url]=output array
-# The format of hte output array should be [http response code, the datetime the query occured, a string url of the saved image so that it can be requsted by the website when it needs ot be rendered.]
+# The format of hte output array should be [http response code, the binary data of the saved image so that it can saved by the application and served when the user calls for it.]
 def checkURL(url):
+    with open(configFile["flask"]["image_folder"]+"/test.png", 'rb') as file:
+            byteList = file.read()
+    return [200, byteList]
+
+def checkURLWrapper(url):
+    results = checkURL(url)    
     generated_urls_lock.acquire()    
-    generated_urls[url] = [200, datetime.datetime.utcnow(), "The Image Doesnt Exist"]
+    generated_urls[url] = results
     generated_urls_lock.release()
 
+    if results[1] != None:
+        with open(configFile["flask"]["image_folder"]+"/"+url+".image", 'wb') as file:
+            file.write(results[1])
+        
+
 def scheduler():
+    shutdown = False
     currentDateTime = datetime.datetime.utcnow()
     while(True):
         time.sleep(1)
@@ -100,7 +128,7 @@ def scheduler():
 
             if generatedUrls != None and len(generatedUrls) > 0:
                 for x in generatedUrls:
-                    newThread = threading.Thread(target=checkURL, args=(x,), name="Checking: " + x)
+                    newThread = threading.Thread(target=checkURLWrapper, args=(x,), name="Checking: " + x)
                     newThread.start()
 
 try:
@@ -110,7 +138,4 @@ except:
     print("Error: unable to start thread")
 
 if __name__ == "__main__":
-    app.run(port=os.getenv("PORT"), threaded=True, debug=(os.getenv("DEBUG") == 'True'))
-    if(os.getenv("VERBOSE") == 'True'):
-        print("Server started on port {}".format(os.getenv("PORT")))
-
+    app.run(port="5000", threaded=True)
