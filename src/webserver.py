@@ -24,7 +24,7 @@ def index():
 @app.route("/image/<string:url>")
 def image(url):
     cursor = cnx.cursor()
-    cursor.execute("SELECT generated_image FROM generatedUrls WHERE generated_url=%s", (givenUrl,))
+    cursor.execute("SELECT generated_image FROM generatedUrls WHERE generated_url=%s", (url,))
     for x in cursor:
         if x[0] == None:            
             return "" 

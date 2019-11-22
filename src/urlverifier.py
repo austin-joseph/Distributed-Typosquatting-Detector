@@ -41,7 +41,7 @@ def loop():
 def start():
     while True:
         loop()
-        time.sleep(1)
+        time.sleep(.1)
 
 def log(message):
     if configFile["logging"] == "True":
