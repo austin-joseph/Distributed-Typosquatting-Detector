@@ -1,9 +1,9 @@
 document.addEventListener('DOMContentLoaded', init);
-const timerID = {};
 
 function init() {
     window.dummy_url = $('#dummy_url');
     window.dummy_url.detach();
+    $("#url_list").hide();
     $('#submit_btn').click(submit_handler);
 }
 
@@ -13,16 +13,15 @@ function submit_handler(event) {
         alert('You need to enter a valid url first');
         return;
     }
-    // if(url in timerID){
-    //     alert("url is already submitted");
-    //     return;
-    // }
     let new_url = window.dummy_url.clone();
-    new_url.attr("id", url);
     new_url.html(new_url.html().replace("dummy.com", url));
+    new_url.removeAttr("id");
+    let result_urls = new_url.find(".list-group");
+    result_urls.empty();
     new_url.find('span').hide();
     $('#url_list').append(new_url);
-    timerID[url] = setInterval(() => submit_url(url), 1000);
+    submit_url(url);
+    $("#url_list").show();
 }
 
 
@@ -37,12 +36,15 @@ async function submit_url(url) {
         });
 
         let response_json = await response.json();
-        // if (!response_json.error == 0) {
-        //     return;
-        // }
-        // $(`#${url}`).find('span').show();
-        clearInterval(timerID[url]);
+        if(response_json.error !== 0) throw new Error(`server sent back error code ${response_json.error}`);
+        for(let element of response_json.generatedUrls){
+            let result_urls = $(".list-group").last();
+            result_urls.append(`<li class="list-group-item"><a href="image/${element}">${element}</a></li>`);
+        }
+        $("#url_list span").last().show();
     } catch (err) {
-        alert(`Encounters this message ${err.message}`);
+        $("#url_list span").last().html("Error");
+        $("#url_list span").last().show();
+        alert(`Encounters this error: ${err.message}`);
     }
 }

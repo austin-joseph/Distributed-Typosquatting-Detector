@@ -3,7 +3,7 @@
     "flask": {
         "static_folder": "static/",
         "image_folder": "src/images",
-        "port": 5000
+        "port": 3000
     },
     "database": {
         "host": "127.0.0.1",

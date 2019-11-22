@@ -838,3 +838,15 @@ p.custom_shadow:hover {
   text-align: center;
 }
 
+.submitted_url_title{
+  font-weight: bolder;
+}
+
+.submitted_url_text{
+  font-weight: normal;
+}
+
+.badge_position{
+  margin-right: 1%;
+}
+

@@ -1,5 +1,4 @@
 import flask
-import time
 import datetime
 import json
 import sys
@@ -62,7 +61,7 @@ def viewResults():
         responseJson["generatedUrls"] = []
         responseJson["urlQueryResults"] = []
         for x in cursor:
-            if x[2] == None:                
+            if x[2] == None:
                 responseJson["error"] = 2
             responseJson["generatedUrls"].append(x[0])
             responseJson["urlQueryResults"].append(
@@ -71,10 +70,11 @@ def viewResults():
                     "http_response_code":x[1],
 					"generated_image" : "/image/" + str(x[0])
                 }
-            )        
+            )
     cursor.close()
     cnx.commit()
     return json.dumps(responseJson, sort_keys=True, default=str)
+
 
 def log(message):
     if configFile["logging"] == "True":
