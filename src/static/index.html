@@ -11,6 +11,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="https://fonts.googleapis.com/css?family=Poppins" rel="stylesheet" />
+    <script src="https://kit.fontawesome.com/c99e9206a7.js" crossorigin="anonymous"></script>
 </head>
 
 <body>
@@ -31,17 +32,24 @@
             </div>
             <span class="info">ex. Facebook.com, paypal.com, chase.com</span>
 
+            <div id="spinner" class="spinner container">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <i class="fa-9x fas fa-spinner fa-pulse"></i>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-12 spinner_text_aligment">
+                        <i id="spinner_text" class="spinner_text">Loading.....</i>
+                    </div>
+                </div>
+            </div>
+
             <div class="container-fluid list_theme" style="margin-top:1em;">
                 <div class="row">
                     <div class="col-12">
-                        <ul class="list-group">
-                            <li id="url_list" class="list-group-item submitted_url_title">Submitted Urls</li>
-                            <li id="dummy_url" class="list-group-item submitted_url_text"><span class="badge badge-primary badge-pill badge_position">Done</span>dummy.com
-                                <ul class="list-group">
-                                    <li class="list-group-item"><a href="#">dummy2.com</a></li>
-                                    <li class="list-group-item"><a href="#">dummy1.com</a></li>
-                                </ul>
-                            </li>
+                        <ul id="url_list" class="list-group">
                         </ul>
                     </div>
                 </div>

@@ -76,6 +76,7 @@ def viewResults():
     return json.dumps(responseJson, sort_keys=True, default=str)
 
 
+
 def log(message):
     if configFile["logging"] == "True":
         print(message)

@@ -846,7 +846,16 @@ p.custom_shadow:hover {
   font-weight: normal;
 }
 
-.badge_position{
-  margin-right: 1%;
+#spinner{
+  margin-top: 8%;
+  text-align: center;
+}
+
+.spinner_text_aligment{
+  margin-top: 4%;
+}
+
+.red_link_text{
+  color: red;
 }
 
