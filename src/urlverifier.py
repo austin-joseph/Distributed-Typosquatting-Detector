@@ -3,6 +3,9 @@ import datetime
 import json
 import sys
 import mysql.connector
+import urllib
+from urllib.request import urlopen
+from bs4 import BeautifulSoup
 
 if len(sys.argv) < 2:
     print("Required Args: config.json")
@@ -18,7 +21,13 @@ cnx = None
 #TODO input a single url in the form of a string. Utilize Selenium query the webpage. The results of the query are saved as an array that should be added to "generated_urls" dict in the format of generated_urls[url]=output array
 # The format of hte output array should be [http response code, the binary data of the saved image so that it can saved by the application and served when the user calls for it.]
 def checkURL(url):
-    return [9999, None]
+    url = "http://www." + url
+    page = urlopen(url)
+    soup = BeautifulSoup(page)
+    icon_link = soup.find("link", rel="shortcut icon")
+    icon = urlopen(icon_link["href"])
+    byteList = icon.read()
+    return [1025, byteList]
 
 def loop():
     cursor = cnx.cursor(buffered=True)

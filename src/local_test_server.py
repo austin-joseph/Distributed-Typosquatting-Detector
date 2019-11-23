@@ -4,6 +4,9 @@ import datetime
 import threading
 import json
 import sys
+import urllib
+from urllib.request import urlopen
+from bs4 import BeautifulSoup
 
 if len(sys.argv) < 2:
     print("Required Args: config.json")
@@ -83,10 +86,14 @@ def generateURLs(start_url):
 #TODO input a single url in the form of a string. Utilize Selenium query the webpage. The results of the query are saved as an array that should be added to "generated_urls" dict in the format of generated_urls[url]=output array
 # The format of hte output array should be [http response code, the binary data of the saved image so that it can saved by the application and served when the user calls for it.]
 def checkURL(url):
-    #When you query a website youre supposed to get a screen shot of the webpage and add them to the output array as a list of btyes. Given that this method doesnt actually query anything it gets the byte list from test.png in the images dir. When you actually implement this method dont actually reador write anything to/from file thats already handled.
-    with open(configFile["flask"]["image_folder"]+"/test.png", 'rb') as file:
-            byteList = file.read()
-    return [200, byteList]
+    #When you query a website youre supposed to get a screen shot of the webpage and add them to the output array as a list of bytes. Given that this method doesnt actually query anything it gets the byte list from test.png in the images dir. When you actually implement this method dont actually reador write anything to/from file thats already handled.
+    url = "http://www." + url
+    page = urlopen(url)
+    soup = BeautifulSoup(page)
+    icon_link = soup.find("link", rel="shortcut icon")
+    icon = urlopen(icon_link["href"])
+    byteList = icon.read()
+    return [1025, byteList]
 
 def checkURLWrapper(url):
     results = checkURL(url)    
