@@ -34,4 +34,4 @@ MySQl Community Edition 8.0.18
 * **[Austin Joseph](https://github.com/austinobejo)**
 * **[Gao XiangShuai](https://github.com/GAO23)**
 * **[Timothy Yuen](https://github.com/austinobejo)**
-
+* **[Yehonathan Litman](https://github.com/yehonathanlitman)**
