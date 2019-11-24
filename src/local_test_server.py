@@ -91,7 +91,7 @@ def generateURLs(start_url):
 def checkURL(url, opts):
     #When you query a website youre supposed to get a screen shot of the webpage and add them to the output array as a list of bytes. Given that this method doesnt actually query anything it gets the byte list from test.png in the images dir. When you actually implement this method dont actually reador write anything to/from file thats already handled.
     url = "http://www." + url
-    driver = webdriver.Chrome(executable_path="/usr/bin/chromedriver", chrome_options=opts)
+    driver = webdriver.Chrome(executable_path="src/chromedriver/chromedriver", chrome_options=opts)
     driver.get(url)
     img = driver.get_screenshot_as_png()
     driver.close()
