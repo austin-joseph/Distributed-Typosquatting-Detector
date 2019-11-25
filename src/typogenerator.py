@@ -95,7 +95,7 @@ def generateURLs(start_url):
 
 def loop():
     cursor = cnx.cursor(buffered=True)
-    cursor.execute("SELECT original_url FROM submittedUrls WHERE (processing_finish IS NULL OR TIMESTAMPDIFF(DAY, processing_finish, %s) > 1) AND (processing_start IS NULL OR TIMESTAMPDIFF(SECOND, processing_start, %s) > 2) ORDER BY date_added ASC LIMIT 1", (datetime.datetime.utcnow(),datetime.datetime.utcnow()))
+    cursor.execute("SELECT original_url FROM submittedUrls WHERE (processing_finish IS NULL OR TIMESTAMPDIFF(DAY, processing_finish, %s) > 1) AND (processing_start IS NULL OR TIMESTAMPDIFF(SECOND, processing_start, %s) > 2) ORDER BY date_added ASC LIMIT %s", (datetime.datetime.utcnow(),datetime.datetime.utcnow(), configFile["max_allowed_tasks_per_update"]))
     subCursor = cnx.cursor(buffered=True)
     newUrls = {}
     for x in cursor:
@@ -105,14 +105,16 @@ def loop():
         subCursor.execute("UPDATE submittedUrls SET processing_finish = %s WHERE original_url = %s", (datetime.datetime.utcnow(), x[0]))
     
     for originalUrl, generatedUrlList in newUrls.items():
-        cursor.execute("SELECT generated_url FROM generatedUrls WHERE original_url = %s", (originalUrl,))
-        for x in cursor:
-            if x[0] in generatedUrlList:
-                generatedUrlList.remove(x[0])
-                subCursor.execute("UPDATE generatedUrls SET date_generated = %s WHERE generated_url =  %s", (x[0], datetime.datetime.utcnow()))
         for generatedUrl in generatedUrlList:
-            cursor.execute("INSERT INTO generatedUrls (generated_url, original_url, date_generated) VALUES(%s, %s, %s)", (generatedUrl, originalUrl, datetime.datetime.utcnow()))
-            
+            cursor.execute("SELECT generated_url FROM generatedUrls WHERE generated_url = %s", (generatedUrl,))
+            urlExists = False
+            for x in cursor:
+                urlExists = True
+            if urlExists:                
+                subCursor.execute("UPDATE generatedUrls SET date_generated = %s WHERE generated_url =  %s", (datetime.datetime.utcnow(), generatedUrl))
+            else:
+                cursor.execute("INSERT INTO generatedUrls (generated_url, original_url, date_generated) VALUES(%s, %s, %s)", (generatedUrl, originalUrl, datetime.datetime.utcnow()))
+          
     subCursor.close()
     cursor.close()
     cnx.commit()

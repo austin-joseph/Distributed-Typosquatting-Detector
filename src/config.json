@@ -1,5 +1,7 @@
 {
     "logging": true,
+    "max_allowed_tasks_per_update": 1,
+    "max_image_size": 16777215,
     "flask": {
         "static_folder": "static/",
         "image_folder": "src/images",

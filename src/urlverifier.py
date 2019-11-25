@@ -22,7 +22,7 @@ cnx = None
 # The format of hte output array should be [http response code, the binary data of the saved image so that it can saved by the application and served when the user calls for it.]
 def checkURL(url, opts):
     url = "http://www." + url
-    driver = webdriver.Chrome(executable_path=configFile["flask"]["chrome_driver"], chrome_options=opts)
+    driver = webdriver.Chrome(executable_path=configFile["flask"]["chrome_driver"], options=opts)
     driver.get(url)
     img = driver.get_screenshot_as_png()
     driver.close()
@@ -47,7 +47,11 @@ def loop():
         subCursor.execute("UPDATE generatedUrls SET processing_finish = %s WHERE generated_url = %s", (datetime.datetime.utcnow(), x[0]))
     subCursor.close()
     for generatedUrl, urlResults in newResults.items():
-        cursor.execute("UPDATE generatedUrls SET generated_image = %s, http_response_code = %s WHERE generated_url = %s", (urlResults[1],urlResults[0], generatedUrl))
+        length = len(urlResults[1])
+        if length > configFile["max_image_size"]:
+          cursor.execute("UPDATE generatedUrls SET http_response_code = %s WHERE generated_url = %s", (urlResults[0], generatedUrl))
+        else:            
+          cursor.execute("UPDATE generatedUrls SET generated_image = %s, http_response_code = %s WHERE generated_url = %s", (urlResults[1],urlResults[0], generatedUrl))
             
     cursor.close()
     cnx.commit()
