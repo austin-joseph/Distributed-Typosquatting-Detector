@@ -5,7 +5,7 @@
     "flask": {
         "static_folder": "static/",
         "image_folder": "src/images",
-        "chrome_driver": "src/chromedriver/linux/chromedriver.exe",
+        "chrome_driver": "./chromedriver/linux/chromedriver",
         "port": 3000
     },
     "database": {

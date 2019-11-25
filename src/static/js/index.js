@@ -1,5 +1,7 @@
 document.addEventListener('DOMContentLoaded', init);
 
+const REQ_TIME = 5000;
+
 function error_code_enum(){
     this.ERR_ZERO = 0;
     this.ERR_ONE = 1;
@@ -36,7 +38,7 @@ function submit_handler(event) {
     $("#url_list").empty();
     $("#spinner").show();
     timer_control.current_url = url;
-    timer_control.timer[url] = setInterval(() => submit_url(url), 1000);
+    timer_control.timer[url] = setInterval(() => submit_url(url), REQ_TIME);
 }
 
 
@@ -53,26 +55,42 @@ async function submit_url(url) {
             method: "POST",
             body: form_data
         });
+
+        if(!response.ok){
+            let err_msg = `Server does not respond with a status 200 message, got status ${response.status} instead\n\n`;
+            if(response.headers.get("content-type") === "text/html"){
+                let response_text = await response.text();
+                err_msg += "server sent back this:\n\n" + response_text;
+            }
+            throw new Error(err_msg);
+        }
+
+
         let response_json = await response.json();
         let message = error_codes.ERROR_MSG[response_json.error];
         $("#spinner_text").html(message);
         if(response_json.error !== error_codes.ERR_ZERO){
             return;
         }
-        $("#spinner").hide();
 
         await Promise.all(response_json.generatedUrls.map(async (element)=>{
-            let result = await fetch( `//${element}`, {mode: 'no-cors'}).catch( e => {});
+             let result = await fetch( `//${element}`, {mode: 'no-cors'}).catch( e => {});
              $("#url_list").append(`<li class="list-group-item"><a ${(result) ? "": "class=\"red_link_text\""}  href=${(result) ? "/image/" + element: "#"}>${element}</a></li>`);
         }));
 
         if(response_json.generatedUrls.length === 0){
              $("#url_list").append(`<li class="list-group-item">Found no squatting urls</li>`);
         }
+
+        $("#spinner").hide();
+
         timer_control.current_url = "";
         clearInterval(timer_control.timer[url]);
     } catch (err) {
 	    clearInterval(timer_control.timer[url]);
+	    $("#spinner").hide();
+        $("#url_list").append(`<li class="list-group-item">Failed to parse</li>`);
+        timer_control.current_url = '';
         alert(`Encounters this error: ${err.message}`);
     }
 }
