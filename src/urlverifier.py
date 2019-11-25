@@ -41,8 +41,7 @@ def checkURL(url, opts):
 
 def loop():
     cursor = cnx.cursor(buffered=True)
-    cursor.execute("SELECT generated_url FROM generatedUrls WHERE (processing_finish IS NULL OR TIMESTAMPDIFF(DAY, processing_finish, %s) > 1) AND (processing_start IS NULL OR TIMESTAMPDIFF(SECOND, processing_start, %s) > 2) ORDER BY date_generated ASC LIMIT 1", (datetime.datetime.utcnow(),datetime.datetime.utcnow()))
-  
+    cursor.execute("SELECT generated_url FROM generatedUrls WHERE (processing_finish IS NULL OR TIMESTAMPDIFF(DAY, processing_finish, %s) > 1) AND (processing_start IS NULL OR TIMESTAMPDIFF(SECOND, processing_start, %s) > 2) ORDER BY date_generated ASC LIMIT %s", (datetime.datetime.utcnow(),datetime.datetime.utcnow(), configFile["max_allowed_tasks_per_update"]))
     subCursor = cnx.cursor(buffered=True)
     newResults = {}
     opts = Options()
@@ -66,7 +65,7 @@ def loop():
 def start():
     while True:
         loop()
-        time.sleep(.1)
+        time.sleep(.001)
 
 def log(message):
     if configFile["logging"] == "True":
