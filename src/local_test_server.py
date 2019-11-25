@@ -39,10 +39,9 @@ def image(url):
             fileBytes = file.read()
             return app.response_class(fileBytes, mimetype="image/png")
     except IOError: 
-        return None
+        return 404
 
 @app.route("/view", methods=["POST"])
-
 def viewResults():
     # if the url exists in our existing data send back that data. IF it doesnt exist find it.
     givenUrl = flask.request.form["url"]
@@ -81,17 +80,20 @@ def viewResults():
 
 #TODO input a single url in the form of a string. Output a list of valid urls. The output may or may not include the startign url. The output url list should be generated using the paper thats linked in the assignment document 
 def generateURLs(start_url):
-    output = []
-    for x in range(8):
-        output.append(start_url + str(x))
-    return output
+    if start_url == "google.com":
+        return ["google.com", "gooogle.com", "goooog.com"]
+    else:
+        output = []
+        for x in range(8):
+            output.append(start_url + str(x))
+        return output
 
 #TODO input a single url in the form of a string. Utilize Selenium query the webpage. The results of the query are saved as an array that should be added to "generated_urls" dict in the format of generated_urls[url]=output array
 # The format of hte output array should be [http response code, the binary data of the saved image so that it can saved by the application and served when the user calls for it.]
 def checkURL(url, opts):
     #When you query a website youre supposed to get a screen shot of the webpage and add them to the output array as a list of bytes. Given that this method doesnt actually query anything it gets the byte list from test.png in the images dir. When you actually implement this method dont actually reador write anything to/from file thats already handled.
     url = "http://www." + url
-    driver = webdriver.Chrome(executable_path="/usr/bin/chromedriver", chrome_options=opts)
+    driver = webdriver.Chrome(executable_path=configFile["flask"]["chrome_driver"], chrome_options=opts)
     driver.get(url)
     img = driver.get_screenshot_as_png()
     driver.close()

@@ -22,7 +22,7 @@ cnx = None
 # The format of hte output array should be [http response code, the binary data of the saved image so that it can saved by the application and served when the user calls for it.]
 def checkURL(url, opts):
     url = "http://www." + url
-    driver = webdriver.Chrome(executable_path="/usr/bin/chromedriver", chrome_options=opts)
+    driver = webdriver.Chrome(executable_path="src/chromedriver/chromedriver", chrome_options=opts)
     driver.get(url)
     img = driver.get_screenshot_as_png()
     driver.close()
