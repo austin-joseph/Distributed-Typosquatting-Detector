@@ -6,6 +6,7 @@ import json
 import sys
 import mysql.connector
 
+
 config_file = ""
 
 if len(sys.argv) < 2:
