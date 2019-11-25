@@ -55,7 +55,7 @@ def viewResults():
         queryData = (givenUrl, datetime.datetime.utcnow())
         cursor.execute(query, queryData)
     else:
-        query = ("SELECT generated_url, http_response_code, processing_finish FROM generatedUrls WHERE original_url = %s")
+        query = ("SELECT generated_url, http_response_code, processing_finish, if(generated_image is not null, true, false)image_null FROM generatedUrls WHERE original_url = %s")
         queryData = (givenUrl,)
         cursor.execute(query, queryData)
         responseJson["generatedUrls"] = []
@@ -68,7 +68,7 @@ def viewResults():
                 {
                     "generated_url" : x[0],
                     "http_response_code":x[1],
-					"generated_image" : "/image/" + str(x[0])
+					"generated_image" : "/image/" + str(x[0]) if x[3] == 1 else "#"
                 }
             )
     cursor.close()
