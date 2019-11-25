@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import time
 import datetime
 import json
@@ -7,10 +9,15 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 import requests
 
+config_file = ""
+
 if len(sys.argv) < 2:
-    print("Required Args: config.json")
-    exit()
-with open(sys.argv[1]) as configHandle:
+    config_file = "config.json"
+    print("defaulting to config.json if config file not specified")
+else:
+    config_file = sys.argv[1]
+
+with open(config_file) as configHandle:
     configFile = json.load(configHandle)
 if configFile == None:
     print("Error loading config file aborting")

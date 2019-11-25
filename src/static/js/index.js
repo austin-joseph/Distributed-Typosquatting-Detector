@@ -72,7 +72,7 @@ async function submit_url(url) {
         timer_control.current_url = "";
         clearInterval(timer_control.timer[url]);
     } catch (err) {
-	clearInterval(timer_control.timer[url]);
+	    clearInterval(timer_control.timer[url]);
         alert(`Encounters this error: ${err.message}`);
     }
 }
