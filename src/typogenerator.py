@@ -3,6 +3,7 @@ import datetime
 import json
 import sys
 import mysql.connector
+import re
 
 if len(sys.argv) < 2:
     print("Required Args: config.json")
@@ -17,9 +18,79 @@ cnx = None
 
 #TODO input a single url in the form of a string. Output a list of valid urls. The output may or may not include the starting url. The output url list should be generated using the paper thats linked in the assignment document 
 def generateURLs(start_url):
+    adjacentKeys = {
+        'q': ['w'],
+        'w': ['q','e'],
+        'e': ['w','r'],
+        'r': ['e', 't'],
+        't': ['r','y'],
+        'y': ['u','t'],
+        'u': ['y','i'],
+        'i': ['u','o'],
+        'o': ['i','p'],
+        'p': ['o'],
+        'a': ['s'],
+        's': ['a','d'],
+        'd': ['f','s'],
+        'f': ['g','d'],
+        'g': ['h','f'],
+        'h': ['j','g'],
+        'j': ['k','h'],
+        'k': ['l','j'],
+        'l': ['k'],
+        'z': ['x'],
+        'x': ['c','z'],
+        'c': ['v','x'],
+        'v': ['b','c'],
+        'b': ['n','v'],
+        'n': ['m','b'],
+        'm': ['n']
+    }
     output = []
-    for x in range(50):
-        output.append(start_url + str(x))
+    httpsRemover = re.compile(r"https?://")
+    wwwRemover = re.compile(r"^www.")
+    url = httpsRemover.sub('', start_url).strip().strip('/')
+    url = wwwRemover.sub('', url)
+
+    # Missing-dot typos:
+    if "www." in start_url:
+        output.append(start_url.replace('.', '', 1))
+
+    # Character-omission typos:
+    startIndex = start_url.find(url)  # Get position where the two string are the same
+    i = startIndex
+    while start_url[i] != '.':
+        new_url = start_url[:startIndex] + start_url[startIndex:i] + start_url[i+1:]
+        output.append(new_url)
+        i +=1
+
+    # Character-omission typos:
+    i = startIndex
+    while start_url[i+1] != '.':
+        new_url = start_url[:startIndex] + start_url[startIndex:i] + start_url[i+1] + start_url[i] + start_url[i+2:]
+        output.append(new_url)
+        i +=1
+
+    # Character-replacement typos:
+    i = startIndex
+    while start_url[i] != '.':
+        value = adjacentKeys.get(start_url[i])
+        for letter in value:
+            new_url = start_url[:startIndex] + start_url[startIndex:i] + letter + start_url[i+1:]
+            output.append(new_url)
+        i +=1
+
+    # Character-insertion typos:
+    i = startIndex
+    while start_url[i] != '.':
+        value = adjacentKeys.get(start_url[i])
+        new_url = start_url[:startIndex] + start_url[startIndex:i] + start_url[i] + start_url[i:]
+        output.append(new_url)
+        for letter in value:
+            new_url = start_url[:startIndex] + start_url[startIndex:i] + letter + start_url[i:]
+            output.append(new_url)
+        i +=1
+
     return output
 
 def loop():
