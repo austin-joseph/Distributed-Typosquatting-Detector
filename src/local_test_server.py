@@ -7,6 +7,7 @@ import sys
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 import requests
+import re
 
 if len(sys.argv) < 2:
     print("Required Args: config.json")
@@ -39,7 +40,7 @@ def image(url):
             fileBytes = file.read()
             return app.response_class(fileBytes, mimetype="image/png")
     except IOError: 
-        return 404
+        return [None,404]
 
 @app.route("/view", methods=["POST"])
 def viewResults():
@@ -177,7 +178,7 @@ def checkURLWrapper(url, opts):
     generated_urls_lock.release()
 
     if results[1] != None:
-        with open(configFile["flask"]["image_folder"]+"/"+url+".png", 'wb') as file:
+        with open(configFile["flask"]["image_folder"]+"/"+url+".image", 'wb') as file:
             file.write(results[1])
         
 
@@ -222,4 +223,4 @@ except:
     print("Error: unable to start thread")
 
 if __name__ == "__main__":
-    app.run(port="5000", threaded=True)
+    app.run(port=configFile["flask"]["port"], threaded=True)
