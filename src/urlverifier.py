@@ -40,16 +40,16 @@ def checkURL(url, opts):
     except TimeoutException:
         img = driver.get_screenshot_as_png()
         print("Page Timed Out")
-#        print(base64.encodestring(img))
+        print(base64.encodestring(img))
         return [403, base64.encodestring(img)]
    
     img = driver.get_screenshot_as_png()
     driver.close()
     try:
         req = requests.get(url)
-        return [req.status_code, img]
+        return [req.status_code, base64.encodestring(img)]
     except requests.ConnectionError:
-#        print(base64.encodestring(img))
+        print(base64.encodestring(img))
         return [503, base64.encodestring(img)] #503 = service unavailable
 
 def loop():
@@ -70,8 +70,8 @@ def loop():
         if length > configFile["max_image_size"]:
           cursor.execute("UPDATE generatedUrls SET http_response_code = %s WHERE generated_url = %s", (urlResults[0], generatedUrl))
         else:
-          print(urlResults[1])
-          cursor.execute("UPDATE generatedUrls SET generated_image = %s, http_response_code = %s WHERE generated_url = %s", (str(urlResults[1]),urlResults[0], generatedUrl))
+#          print(urlResults[1])
+          cursor.execute("UPDATE generatedUrls SET generated_image = %s, http_response_code = %s WHERE generated_url = %s", (urlResults[1].decode("utf-8"),urlResults[0], generatedUrl))
             
     cursor.close()
     cnx.commit()

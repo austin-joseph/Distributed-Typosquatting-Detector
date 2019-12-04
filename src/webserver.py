@@ -40,7 +40,7 @@ def image(url):
             image = x[0]
     cursor.close()
     if image != None:
-        return app.response_class(base64.decodestring(bytes(image, 'utf-8')), mimetype="image/png")
+        return app.response_class(base64.decodestring(str.encode(image)), mimetype="image/png")
     else:
         return Response("{'error':'image not found'}", status=404, mimetype='application/json')
 
