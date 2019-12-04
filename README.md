@@ -1,5 +1,5 @@
 
-# Distributed Typosquatting Detector
+# Distributed Typosquatting Detector(Team 4 Project 4)
 
 DTD is made up of three parts.
 
