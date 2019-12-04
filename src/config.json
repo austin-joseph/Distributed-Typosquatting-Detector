@@ -13,7 +13,6 @@
         "port": "3306",
         "database": "dtd",
         "user": "dtd_slave",
-        "password": "dtd_slave",
-        "charset":"utf8mb4"
+        "password": "dtd_slave"
     }
 }

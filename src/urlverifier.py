@@ -9,6 +9,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import TimeoutException
 import requests
+import base64
 
 config_file = ""
 
@@ -39,7 +40,8 @@ def checkURL(url, opts):
     except TimeoutException:
         img = driver.get_screenshot_as_png()
         print("Page Timed Out")
-        return [403, img]
+#        print(base64.encodestring(img))
+        return [403, base64.encodestring(img)]
    
     img = driver.get_screenshot_as_png()
     driver.close()
@@ -47,7 +49,8 @@ def checkURL(url, opts):
         req = requests.get(url)
         return [req.status_code, img]
     except requests.ConnectionError:
-        return [503, img] #503 = service unavailable
+#        print(base64.encodestring(img))
+        return [503, base64.encodestring(img)] #503 = service unavailable
 
 def loop():
     cursor = cnx.cursor(buffered=True)
@@ -66,8 +69,9 @@ def loop():
         length = len(urlResults[1])
         if length > configFile["max_image_size"]:
           cursor.execute("UPDATE generatedUrls SET http_response_code = %s WHERE generated_url = %s", (urlResults[0], generatedUrl))
-        else:            
-          cursor.execute("UPDATE generatedUrls SET generated_image = %s, http_response_code = %s WHERE generated_url = %s", (urlResults[1],urlResults[0], generatedUrl))
+        else:
+          print(urlResults[1])
+          cursor.execute("UPDATE generatedUrls SET generated_image = %s, http_response_code = %s WHERE generated_url = %s", (str(urlResults[1]),urlResults[0], generatedUrl))
             
     cursor.close()
     cnx.commit()
