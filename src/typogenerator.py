@@ -25,6 +25,7 @@ cnx = None
 
 #TODO input a single url in the form of a string. Output a list of valid urls. The output may or may not include the starting url. The output url list should be generated using the paper thats linked in the assignment document 
 def generateURLs(start_url):
+    print("Processed: " + str(start_url))
     adjacentKeys = {
         'q': ['w'],
         'w': ['q','e'],
@@ -129,7 +130,6 @@ def loop():
 def start():
     while True:
         loop()
-        time.sleep(.1)
 
 def log(message):
     if configFile["logging"] == "True":

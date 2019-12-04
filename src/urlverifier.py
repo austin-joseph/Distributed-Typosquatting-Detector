@@ -7,6 +7,7 @@ import sys
 import mysql.connector
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from selenium.common.exceptions import TimeoutException
 import requests
 
 config_file = ""
@@ -28,9 +29,18 @@ cnx = None
 #TODO input a single url in the form of a string. Utilize Selenium query the webpage. The results of the query are saved as an array that should be added to "generated_urls" dict in the format of generated_urls[url]=output array
 # The format of hte output array should be [http response code, the binary data of the saved image so that it can saved by the application and served when the user calls for it.]
 def checkURL(url, opts):
+    print("Querying: "+ url)
     url = "http://www." + url
     driver = webdriver.Chrome(executable_path=configFile["flask"]["chrome_driver"], options=opts)
-    driver.get(url)
+    driver.set_page_load_timeout(5)
+    driver.maximize_window()
+    try:    
+        driver.get(url)
+    except TimeoutException:
+        img = driver.get_screenshot_as_png()
+        print("Page Timed Out")
+        return [403, img]
+   
     img = driver.get_screenshot_as_png()
     driver.close()
     try:
@@ -65,7 +75,6 @@ def loop():
 def start():
     while True:
         loop()
-        time.sleep(.001)
 
 def log(message):
     if configFile["logging"] == "True":

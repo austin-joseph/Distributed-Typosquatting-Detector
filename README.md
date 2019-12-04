@@ -27,6 +27,8 @@ Python Version: 3.7.4-buster (https://www.python.org/downloads/)
 Flask (pip install Flask)
 mysql-connector-python 8.0.18 (pip install mysql-connector-python)
 MySQl Community Edition 8.0.18
+Requests(pip install requests)
+Selenium(pip install selenium
 ```
 
 ## Authors

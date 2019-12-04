@@ -1,11 +1,11 @@
 #!/usr/bin/python3
-
+# -*- coding: utf-8 -*-
 import flask
 import datetime
 import json
 import sys
 import mysql.connector
-
+from flask import Response
 
 config_file = ""
 
@@ -31,13 +31,17 @@ def index():
 
 @app.route("/image/<string:url>")
 def image(url):
-    cursor = cnx.cursor()
-    cursor.execute("SELECT generated_image FROM generatedUrls WHERE generated_url=%s", (url,))
+    cursor = cnx.cursor(buffered=True)
+    cursor.execute("SELECT generated_image FROM generatedUrls WHERE generated_url=%s LIMIT 1", (url,))
+    image = None
     for x in cursor:
-        if x[0] == None:            
-            return "" 
-        else:
-            return app.response_class(x[0], mimetype="image/png")
+        if x[0] != None:
+            image = x[0]
+    cursor.close()
+    if image != None:
+        return app.response_class(image, mimetype="image/png")
+    else:
+        return Response("{'error':'image not found'}", status=404, mimetype='application/json')
 
 @app.route("/view", methods=["POST"])
 def viewResults():
@@ -63,7 +67,7 @@ def viewResults():
         queryData = (givenUrl, datetime.datetime.utcnow())
         cursor.execute(query, queryData)
     else:
-        query = ("SELECT generated_url, http_response_code, processing_finish, if(generated_image is not null, true, false)image_null FROM generatedUrls WHERE original_url = %s")
+        query = ("SELECT generated_url, http_response_code, processing_finish, if(generated_image is not null, true, false)image_null FROM generatedUrls WHERE original_url = %s AND http_response_code IS NOT NULL AND (http_response_code >= 200 AND http_response_code < 300)")
         queryData = (givenUrl,)
         cursor.execute(query, queryData)
         responseJson["generatedUrls"] = []

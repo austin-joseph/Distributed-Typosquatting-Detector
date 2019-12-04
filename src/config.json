@@ -4,7 +4,7 @@
     "max_image_size": 16777215,
     "flask": {
         "static_folder": "static/",
-        "image_folder": "src/images",
+        "image_folder": "images",
         "chrome_driver": "./chromedriver/linux/chromedriver",
         "port": 3000
     },
@@ -13,6 +13,7 @@
         "port": "3306",
         "database": "dtd",
         "user": "dtd_slave",
-        "password": "dtd_slave"
+        "password": "dtd_slave",
+        "charset":"utf8mb4"
     }
 }
