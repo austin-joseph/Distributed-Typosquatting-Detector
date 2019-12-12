@@ -68,7 +68,7 @@ def viewResults():
         queryData = (givenUrl, datetime.datetime.utcnow())
         cursor.execute(query, queryData)
     else:
-        query = ("SELECT generated_url, http_response_code, processing_finish, if(generated_image is not null, true, false)image_null FROM generatedUrls WHERE original_url = %s AND http_response_code IS NOT NULL AND (http_response_code >= 200 AND http_response_code < 300)")
+        query = ("SELECT generated_url, http_response_code, processing_finish, if(generated_image is not null, true, false)image_null FROM generatedUrls WHERE original_url = %s")
         queryData = (givenUrl,)
         cursor.execute(query, queryData)
         responseJson["generatedUrls"] = []
@@ -76,14 +76,15 @@ def viewResults():
         for x in cursor:
             if x[2] == None:
                 responseJson["error"] = 2
-            responseJson["generatedUrls"].append(x[0])
-            responseJson["urlQueryResults"].append(
-                {
-                    "generated_url" : x[0],
-                    "http_response_code":x[1],
-					"generated_image" : "/image/" + str(x[0]) if x[3] == 1 else "#"
-                }
-            )
+            if x[1] != None and x[1] >= 200 and x[1] <300:
+                responseJson["generatedUrls"].append(x[0])
+                responseJson["urlQueryResults"].append(
+                    {
+                        "generated_url" : x[0],
+                        "http_response_code":x[1],
+                        "generated_image" : "/image/" + str(x[0]) if x[3] == 1 else "#"
+                    }
+                )
     cursor.close()
     cnx.commit()
     return json.dumps(responseJson, sort_keys=True, default=str)

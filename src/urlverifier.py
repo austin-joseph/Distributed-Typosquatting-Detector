@@ -40,7 +40,7 @@ def checkURL(url, opts):
     except TimeoutException:
         img = driver.get_screenshot_as_png()
         print("Page Timed Out")
-        print(base64.encodestring(img))
+        # print(base64.encodestring(img))
         return [403, base64.encodestring(img)]
    
     img = driver.get_screenshot_as_png()
@@ -49,7 +49,7 @@ def checkURL(url, opts):
         req = requests.get(url)
         return [req.status_code, base64.encodestring(img)]
     except requests.ConnectionError:
-        print(base64.encodestring(img))
+        # print(base64.encodestring(img))
         return [503, base64.encodestring(img)] #503 = service unavailable
 
 def loop():
