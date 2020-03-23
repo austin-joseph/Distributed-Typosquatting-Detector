@@ -1,0 +1,11 @@
+FROM python:3.7.7-buster
+
+RUN pip install flask
+RUN pip install mysql-connector-python==8.0.18
+RUN pip install requests
+RUN pip install selenium
+
+COPY /src /usr/bin/dtd
+RUN chmod +x /usr/bin/dtd/startall.sh
+WORKDIR /usr/bin/dtd
+ENTRYPOINT ./startall.sh
