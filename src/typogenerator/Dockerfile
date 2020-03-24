@@ -1,10 +1,10 @@
 FROM python:3.7.7-buster
 
 RUN pip install mysql-connector-python==8.0.18
-RUN pip install requests
-RUN pip install selenium
 
-COPY /urlverifier /usr/bin/dtd
+COPY typogenerator.py /usr/bin/dtd/
+
+COPY run.sh /usr/bin/dtd/
 RUN chmod +x /usr/bin/dtd/run.sh
 
 COPY /config.json /usr/bin/dtd

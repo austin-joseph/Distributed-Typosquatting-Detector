@@ -1,1 +1,1 @@
-nohup python webserver.py
+python webserver.py

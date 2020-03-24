@@ -23,15 +23,19 @@ The three main parts of the application(web server, typo generator, url verifier
 
 ### Prerequisites
 ```
-Python Version: 3.7.4-buster (https://www.python.org/downloads/)
+Python Version: 3.7.7-buster (https://www.python.org/downloads/)
 Flask (pip install Flask)
 mysql-connector-python 8.0.18 (pip install mysql-connector-python)
 MySQl Community Edition 8.0.18
 Requests(pip install requests)
-Selenium(pip install selenium
+Selenium(pip install selenium)
 ```
 
-## Authors
+## Current Maintainer
+
+* **[Austin Joseph](https://github.com/austinobejo)**
+
+## Original Authors
 
 * **[Austin Joseph](https://github.com/austinobejo)**
 * **[Gao XiangShuai](https://github.com/GAO23)**
