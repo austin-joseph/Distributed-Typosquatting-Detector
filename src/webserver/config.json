@@ -7,10 +7,10 @@
         "image_folder": "images",
         "chrome_driver": "src/chromedriver/linux/chromedriver",
         "host": "0.0.0.0",
-        "port": 80
+        "port": 8080
     },
     "database": {
-        "host": "general-mysql",
+        "host": "127.0.0.1",
         "port": "3306",
         "database": "dtd",
         "user": "dtd_slave",
