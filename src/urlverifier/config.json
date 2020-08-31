@@ -5,12 +5,12 @@
     "flask": {
         "static_folder": "static/",
         "image_folder": "images",
-        "chrome_driver": "src/chromedriver/linux/chromedriver",
+        "chrome_driver": "src/urlverifier/chromedriver/win/chromedriver.exe",
         "host": "0.0.0.0",
         "port": 3000
     },
     "database": {
-        "host": "general-mysql",
+        "host": "127.0.0.1",
         "port": "3306",
         "database": "dtd",
         "user": "dtd_slave",

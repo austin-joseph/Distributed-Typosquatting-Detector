@@ -7,6 +7,7 @@ import sys
 import mysql.connector
 from flask import Response
 import base64
+from waitress import serve
 
 config_file = ""
 
@@ -22,7 +23,7 @@ if configFile == None:
     print("Error loading config file aborting")
     exit()
 
-app = flask.Flask(__name__, static_url_path='',
+app = flask.Flask(__name__, static_url_path=configFile["flask"]["static_url_path"],
                   static_folder=configFile["flask"]["static_folder"])
 cnx = None
 
@@ -76,7 +77,7 @@ def viewResults():
         for x in cursor:
             if x[2] == None:
                 responseJson["error"] = 2
-            if x[1] != None and x[1] >= 200 and x[1] <300:
+            if x[1] != None and int(x[1]) >= 200 and int(x[1]) <300:
                 responseJson["generatedUrls"].append(x[0])
                 responseJson["urlQueryResults"].append(
                     {
@@ -102,5 +103,6 @@ if cnx == None:
     exit()
 
 if __name__ == "__main__":
-    app.run(port=configFile["flask"]["port"], threaded=True)
-    log("Server started on port {}".format(configFile["flask"]["port"]))
+    # app.run(port=configFile["flask"]["port"], threaded=True)
+    #log("Server started on port {}".format(configFile["flask"]["port"]))
+    serve(app, listen='*:8080')
