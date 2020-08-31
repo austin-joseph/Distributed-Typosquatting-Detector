@@ -32,7 +32,7 @@ cnx = None
 def checkURL(url, opts):
     print("Querying: "+ url)
     url = "http://www." + url
-    driver = webdriver.Chrome(executable_path=configFile["flask"]["chrome_driver"], options=opts)
+    driver = webdriver.Chrome(executable_path=configFile["chrome_driver"], options=opts)
     driver.set_page_load_timeout(5)
     driver.maximize_window()
     try:    
