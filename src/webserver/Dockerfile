@@ -1,8 +1,6 @@
-FROM ubuntu:18.04
+FROM python:3.7.7-buster
 
-RUN apt-get update && apt-get install -y python3.7 && apt-get install -y python3-pip
-
-RUN pip3 install flask && pip3 install mysql-connector-python==8.0.18 && pip3 install waitress
+RUN pip3 install flask && pip3 install mysql-connector-python==8.0.18 && pip3 install waitress==1.4.4
 
 COPY webserver.py /usr/bin/dtd/
 COPY static /usr/bin/dtd/static
