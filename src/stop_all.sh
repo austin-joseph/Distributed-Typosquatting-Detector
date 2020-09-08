@@ -1,14 +1,11 @@
-cd docker-mysql
-./start.sh
-cd ..
 cd src
 cd webserver
-./start.sh
+./stop.sh
 cd ..
 cd typogenerator
-./start.sh
+./stop.sh
 cd ..
 cd urlverifier
-./start.sh
+./stop.sh
 cd docker-selenium
-./start.sh
+./stop.sh
