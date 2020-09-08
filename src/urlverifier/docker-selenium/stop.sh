@@ -1,3 +1,4 @@
+echo "Stopping selenium-hub and selenium-chrome"
 docker stop selenium-hub
 docker stop selenium-chrome-0
 docker stop selenium-chrome-1

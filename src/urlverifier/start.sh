@@ -1,2 +1,2 @@
-echo "Starting dtd-urlverifier"
+echo "Starting container dtd-urlverifier"
 docker start dtd-urlverifier

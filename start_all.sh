@@ -12,4 +12,3 @@ cd urlverifier
 ./start.sh
 cd docker-selenium
 ./start.sh
-

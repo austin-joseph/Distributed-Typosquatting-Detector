@@ -1,6 +1,5 @@
 chmod +x start_all.sh
 chmod +x init_all.sh
-
 cd docker-mysql
 chmod +x build.sh
 chmod +x delete.sh
@@ -33,4 +32,3 @@ chmod +x delete.sh
 chmod +x restart.sh
 chmod +x start.sh
 chmod +x stop.sh
-

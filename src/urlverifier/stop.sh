@@ -1,2 +1,2 @@
-echo "Stopping dtd-urlverifier"
+echo "Stopping container dtd-urlverifier"
 docker stop dtd-urlverifier
