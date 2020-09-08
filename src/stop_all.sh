@@ -1,4 +1,3 @@
-cd src
 cd webserver
 ./stop.sh
 cd ..
