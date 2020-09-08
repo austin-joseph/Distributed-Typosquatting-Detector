@@ -1,1 +1,1 @@
-nohup python urlverifier.py
+nohup python3 -u urlverifier.py

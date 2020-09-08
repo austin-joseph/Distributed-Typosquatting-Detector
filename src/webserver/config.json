@@ -14,7 +14,7 @@
         "host": "dtd-mysql",
         "port": "3306",
         "database": "dtd",
-        "user": "dtd_slave",
-        "password": "dtd_slave"
+        "user": "dtd-webserver",
+        "password": "dtd-webserver"
     }
 }

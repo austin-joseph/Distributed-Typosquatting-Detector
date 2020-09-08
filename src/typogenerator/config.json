@@ -1,19 +1,11 @@
 {
     "logging": true,
     "max_allowed_tasks_per_update": 1,
-    "max_image_size": 16777215,
-    "flask": {
-        "static_folder": "static/",
-        "image_folder": "images",
-        "chrome_driver": "src/chromedriver/linux/chromedriver",
-        "host": "0.0.0.0",
-        "port": 3000
-    },
     "database": {
-        "host": "general-mysql",
+        "host": "dtd-mysql",
         "port": "3306",
         "database": "dtd",
-        "user": "dtd_slave",
-        "password": "dtd_slave"
+        "user": "dtd-typogenerator",
+        "password": "dtd-typogenerator"
     }
 }

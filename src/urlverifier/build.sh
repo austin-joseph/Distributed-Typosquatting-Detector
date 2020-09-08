@@ -1,3 +1,3 @@
-docker rm dtd-urlverifier
+echo "Building and creating dtd-urlverifier"
 docker build -t dtd-urlverifier .
-docker create --network mysql-network --name dtd-urlverifier dtd-urlverifier
+docker create --network dtd-network --name dtd-urlverifier dtd-urlverifier
