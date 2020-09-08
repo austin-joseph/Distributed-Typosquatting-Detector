@@ -6,3 +6,5 @@ cd typogenerator
 cd ..
 cd urlverifier
 ./build.sh
+cd docker-selenium
+./build.sh

@@ -30,6 +30,7 @@ chmod +x rebuild.sh
 chmod +x start.sh
 chmod +x stop.sh
 cd docker-selenium
+chmod +x build.sh
 chmod +x delete.sh
 chmod +x restart.sh
 chmod +x start.sh
