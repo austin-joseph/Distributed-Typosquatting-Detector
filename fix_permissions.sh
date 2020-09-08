@@ -1,3 +1,5 @@
+chmod +x start_all.sh
+
 cd docker-mysql
 chmod +x build.sh
 chmod +x delete.sh
