@@ -10,6 +10,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import TimeoutException
 from selenium.common.exceptions import WebDriverException
+from selenium.common.exceptions import UnexpectedAlertPresentException
 import requests
 import base64
 
@@ -41,12 +42,9 @@ def checkURL(url):
     url = "http://" + url
     opts = Options()
     opts.add_argument("--headless")
-    try:
-        driver = webdriver.Remote(command_executor=configFile["selenium"]["hub_address"], desired_capabilities=configFile["selenium"]["desired_capabilities"], options=opts)
-    except:
-        logger.critical("Unexpected error:" + str(sys.exc_info()[0]))
-        return None    
+    driver = webdriver.Remote(command_executor=configFile["selenium"]["hub_address"], desired_capabilities=configFile["selenium"]["desired_capabilities"], options=opts)
     driver.set_page_load_timeout(5)
+    driver.set_window_size(1920, 1080)
     driver.maximize_window()
     try:    
         driver.get(url)
@@ -54,14 +52,27 @@ def checkURL(url):
         img = driver.get_screenshot_as_png()
         logger.info("Page Timed Out")
         # print(base64.encodestring(img))
-        return [403, base64.encodestring(img)]
+        return [403, base64.encodebytes(img)]
     except WebDriverException:
         img = driver.get_screenshot_as_png()
         logger.info("Page Not Found")
         # print(base64.encodestring(img))
-        return [404, base64.encodestring(img)]
-   
-    img = driver.get_screenshot_as_png()
+        return [404, base64.encodebytes(img)]
+
+    tryTakeScreenShot = True
+    img = None
+ 
+    while tryTakeScreenShot:        
+        try:
+            img = driver.get_screenshot_as_png()
+            tryTakeScreenShot = False
+        except UnexpectedAlertPresentException:
+            alert = browser.switch_to.alert
+            alert.accept()
+        except:
+            tryTakeScreenShot = False
+            driver.close()
+            return
     driver.close()
     try:
         req = requests.get(url)
@@ -72,22 +83,26 @@ def checkURL(url):
 
 def loop():
     cursor = cnx.cursor(buffered=True)
-    cursor.execute("SELECT generated_url,processing_start FROM generatedUrls WHERE (processing_finish IS NULL OR TIMESTAMPDIFF(DAY, processing_finish, %s) > 1) AND (processing_start IS NULL OR TIMESTAMPDIFF(SECOND, processing_start, %s) > 2) ORDER BY date_generated ASC LIMIT %s", (datetime.datetime.utcnow(),datetime.datetime.utcnow(), configFile["max_allowed_tasks_per_update"]))
+    cursor.execute("SELECT generated_url,processing_start FROM generatedUrls WHERE (processing_finish IS NULL OR TIMESTAMPDIFF(DAY, processing_finish, %s) > 1) AND (processing_start IS NULL OR TIMESTAMPDIFF(SECOND, processing_start, %s) > 2) ORDER BY date_generated ASC LIMIT 1", (datetime.datetime.utcnow(),datetime.datetime.utcnow()))
     subCursor = cnx.cursor(buffered=True)
     newResults = {}
     for x in cursor:
         newResults[x[0]] = []
         subCursor.execute("UPDATE generatedUrls SET processing_start = %s WHERE generated_url = %s", (datetime.datetime.utcnow(), x[0]))
         logger.info("Checking: "+ x[0])
-        checkUrlResults = checkURL(x[0])
+        checkUrlResults = None
+        try:
+            checkUrlResults = checkURL(x[0])
+        except:
+            logger.critical("Unexpected error:" + str(sys.exc_info()[0]))
+
         if checkUrlResults != None:
             newResults[x[0]].extend(checkUrlResults)
             subCursor.execute("UPDATE generatedUrls SET processing_finish = %s WHERE generated_url = %s", (datetime.datetime.utcnow(), x[0]))
             logger.info("Response Code: "+ str(checkUrlResults[0]))
         else:
             subCursor.execute("UPDATE generatedUrls SET processing_start = %s WHERE generated_url = %s", (x[1], x[0]))
-            logger.warning("Urlverifier had an error communicating with selenium.")
-
+            
     subCursor.close()
     for generatedUrl, urlResults in newResults.items():
         length = len(urlResults)

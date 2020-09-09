@@ -1,5 +1,4 @@
 {
-	"max_allowed_tasks_per_update": 1,
 	"max_image_size": 16777215,
 	"selenium":{
 		"hub_address":"http://selenium-hub:4444/wd/hub",
