@@ -43,8 +43,18 @@ selenium/hub:4.0.0-alpha-7-prerelease-20200826
 selenium/node-chrome:4.0.0-alpha-7-prerelease-20200826
 ```
 
-## Getting Started
-The three main parts of the application(web server, typo generator, url verifier) are meant to be run concurrently a single database can support as many of these applications as required. They will run in parallel until stopped.
+## SETUP
+Each segment of the application has a prebuilt docker container. There are scripts avaliable to setup permissions on linux.
+
+1. chmod +x fix_permissions.sh
+2. /fix_permissions.sh
+3. docker network create dtd-network
+4. docker-mysql/build.sh
+5. docker-mysql/start.sh
+6. src/build_all.sh
+7. src/start_all.sh
+
+For easy setup. Run docker-mysql/
 
 ## Current Maintainer
 
@@ -54,5 +64,5 @@ The three main parts of the application(web server, typo generator, url verifier
 
 * **[Austin Joseph](https://github.com/austin-joseph)**
 * **[Gao XiangShuai](https://github.com/GAO23)**
-* **[Timothy Yuen](https://github.com/austinobejo)**
+* Timothy Yuen
 * **[Yehonathan Litman](https://github.com/yehonathanlitman)**
