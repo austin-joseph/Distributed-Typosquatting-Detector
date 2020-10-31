@@ -1,5 +1,5 @@
 
-# Distributed Typosquatting Detector(Team 4 Project 4)
+# Distributed Typosquatting Detector
 
 DTD is web application designed to help users look out for typosquatters(websites with domain names similar to popular websites mean to decieve users). And warn people of what they might look like.
 
@@ -45,7 +45,7 @@ selenium/node-chrome:4.0.0-alpha-7-prerelease-20200826
 
 ## SETUP
 Each segment of the application has a prebuilt docker container. There are scripts avaliable to setup permissions on linux.
-
+```
 1. chmod +x fix_permissions.sh
 2. /fix_permissions.sh
 3. docker network create dtd-network
@@ -53,9 +53,10 @@ Each segment of the application has a prebuilt docker container. There are scrip
 5. docker-mysql/start.sh
 6. src/build_all.sh
 7. src/start_all.sh
+```
 
-For easy setup. Run docker-mysql/
-
+Defaults to port 4000
+ 
 ## Current Maintainer
 
 * **[Austin Joseph](https://github.com/austin-joseph)**
