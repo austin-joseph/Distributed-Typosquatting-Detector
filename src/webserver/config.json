@@ -3,7 +3,8 @@
         "base_name": "dtd.webserver",
         "output_file": "./log/full.log",
         "all_log": "./logs/all.log",
-        "traffic_log": "./logs/traffic.log"
+        "traffic_log": "./logs/traffic.log",
+        "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
     },
     "flask": {
         "static_folder": "./static/",
