@@ -8,33 +8,98 @@ import mysql.connector
 from flask import Response
 import base64
 from waitress import serve
+import logging
+import os
+import time
 
-config_file = ""
+config_file = "config.json"
+# loggingDefaults = {
+#     "output_file": "./log/full.log",
+#     "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+# }
 
 if len(sys.argv) < 2:
     config_file = "config.json"
-    print("defaulting to config.json if config file not specified")
+    print("defaulting to " + os.path.abspath(config_file))
 else:
     config_file = sys.argv[1]
+    print("Loading config at " +  os.path.abspath(config_file))
 
 with open(config_file) as configHandle:
     configFile = json.load(configHandle)
+
 if configFile == None:
     print("Error loading config file aborting")
     exit()
 
+# waitresslogger = logging.getLogger('waitress')
+# waitresslogger.setLevel(logging.NOTSET)
+# waitressHandler = logging.FileHandler(configFile["logging"]["waitress_log"])
+# waitressHandler.setLevel(logging.NOTSET)
+# waitressHandler.setFormatter(configFile["logging"]["format"])
+# waitresslogger.addHandler(waitressHandler)
+
+# rootLogger = logging.getLogger()
+# fileHandler = logging.FileHandler(configFile["logging"]["root_log"], mode='a+')
+# fileHandler.setFormatter(logFormatter)
+# rootLogger.addHandler(fileHandler)
+# consoleHandler = logging.StreamHandler()
+# consoleHandler.setFormatter(logFormatter)
+# rootLogger.addHandler(consoleHandler)
+
+logFormatter = logging.Formatter(configFile["logging"]["format"])
+
+mainLogger = logging.getLogger(configFile["logging"]["base_name"])
+mainLogger.setLevel(logging.DEBUG)
+
+mainFileHandler = logging.FileHandler(configFile["logging"]["all_log"])
+mainFileHandler.setFormatter(logFormatter)
+mainFileHandler.setLevel(logging.DEBUG)
+mainLogger.addHandler(mainFileHandler)
+
+consoleHandler = logging.StreamHandler(sys.stdout)
+consoleHandler.setLevel(logging.DEBUG)
+consoleHandler.setFormatter(logFormatter)
+mainLogger.addHandler(consoleHandler)
+
+
+trafficLogger = logging.getLogger(configFile["logging"]["base_name"] + ".traffic")
+trafficLogger.setLevel(logging.DEBUG)
+
+trafficFileHandler = logging.FileHandler(configFile["logging"]["traffic_log"])
+trafficFileHandler.setFormatter(logFormatter)
+trafficFileHandler.setLevel(logging.DEBUG)
+trafficLogger.addHandler(trafficFileHandler)
+
+
+mainLogger.info("Creating Flask instance with values {}".format(configFile["flask"]))
+
 app = flask.Flask(__name__, static_url_path=configFile["flask"]["static_url_path"],
                   static_folder=configFile["flask"]["static_folder"])
+
+mainLogger.info("Attempting to connect to database: {}" .format(configFile["database"]["host"] + ":" +configFile["database"]["port"]))
 cnx = None
+for i in range(5):
+    try:
+        cnx = mysql.connector.connect(**configFile["database"])
+    except mysql.connector.Error as err:
+        mainLogger.critical("Connection to database: {} failed, attempting to reconnect".format(configFile["database"]["host"] + ":" +configFile["database"]["port"]))
+        time.sleep(5)
+if cnx == None:
+        mainLogger.critical("Connection to database: {} failed. Stopping".format(configFile["database"]["host"] + ":" +configFile["database"]["port"]))
+        exit()
 
 @app.route("/")
 def index():
+    trafficLogger.info("Endpoint: /, Return index.html")
     return app.send_static_file("index.html")
+
 
 @app.route("/image/<string:url>")
 def image(url):
     cursor = cnx.cursor(buffered=True)
-    cursor.execute("SELECT generated_image FROM generatedUrls WHERE generated_url=%s LIMIT 1", (url,))
+    cursor.execute(
+        "SELECT generated_image FROM generatedUrls WHERE generated_url=%s LIMIT 1", (url,))
     image = None
     for x in cursor:
         if x[0] != None:
@@ -45,8 +110,10 @@ def image(url):
     else:
         return Response("{'error':'image not found'}", status=404, mimetype='application/json')
 
+
 @app.route("/view", methods=["POST"])
 def viewResults():
+    mainLogger.info("Request on /view")
     givenUrl = flask.request.form["url"]
     responseJson = {}
     responseJson["error"] = 0
@@ -65,7 +132,8 @@ def viewResults():
 
     if not urlInDatabase:
         responseJson["error"] = 1
-        query = ("INSERT INTO submittedUrls (original_url, date_added)  VALUES(%s, %s)")
+        query = (
+            "INSERT INTO submittedUrls (original_url, date_added)  VALUES(%s, %s)")
         queryData = (givenUrl, datetime.datetime.utcnow())
         cursor.execute(query, queryData)
     else:
@@ -77,32 +145,19 @@ def viewResults():
         for x in cursor:
             if x[2] == None:
                 responseJson["error"] = 2
-            if x[1] != None and int(x[1]) >= 200 and int(x[1]) <300:
+            if x[1] != None and int(x[1]) >= 200 and int(x[1]) < 300:
                 responseJson["generatedUrls"].append(x[0])
                 responseJson["urlQueryResults"].append(
                     {
-                        "generated_url" : x[0],
-                        "http_response_code":x[1],
-                        "generated_image" : "/image/" + str(x[0]) if x[3] == 1 else "#"
+                        "generated_url": x[0],
+                        "http_response_code": x[1],
+                        "generated_image": "/image/" + str(x[0]) if x[3] == 1 else "#"
                     }
                 )
     cursor.close()
     cnx.commit()
     return json.dumps(responseJson, sort_keys=True, default=str)
 
-
-
-def log(message):
-    if configFile["logging"] == "True":
-        print(message)
-
-cnx = mysql.connector.connect(**configFile["database"])
-
-if cnx == None:
-    print("Could not connect to database, exiting.")
-    exit()
-
 if __name__ == "__main__":
-    # app.run(port=configFile["flask"]["port"], threaded=True)
-    log("Server started on port {}".format(configFile["flask"]["port"]))
+    mainLogger.info("Waitress started on port {}".format(configFile["flask"]["port"]))
     serve(app, listen='*:'+configFile["flask"]["port"])

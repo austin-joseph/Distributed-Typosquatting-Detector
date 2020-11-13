@@ -1,5 +1,13 @@
 {
-    "logging": true,
+    "logging": {
+        "base_name": "dtd.webserver",
+        "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        "output_file": "./log/full.log",
+        "root_log": "./logs/root.log",
+        "waitress_log": "./logs/waitress.log",
+        "all_log": "./logs/all.log",
+        "traffic_log": "./logs/traffic.log"
+    },
     "max_allowed_tasks_per_update": 1,
     "max_image_size": 16777215,
     "flask": {
@@ -9,7 +17,7 @@
         "port": "8080"
     },
     "database": {
-        "host": "dtd-database",
+        "host": "localhost",
         "port": "3306",
         "database": "dtd",
         "user": "dtd-webserver",
