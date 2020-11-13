@@ -1,4 +1,4 @@
-cd docker-mysql
+cd docker-database
 chmod +x build.sh
 chmod +x delete.sh
 chmod +x start.sh

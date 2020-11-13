@@ -4,12 +4,12 @@
     "max_image_size": 16777215,
     "flask": {
         "static_folder": "./static/",
-        "static_url_path": "./",
+        "static_url_path": "/",
         "host": "0.0.0.0",
-        "port": 8080
+        "port": "8080"
     },
     "database": {
-        "host": "dtd-mysql",
+        "host": "dtd-database",
         "port": "3306",
         "database": "dtd",
         "user": "dtd-webserver",

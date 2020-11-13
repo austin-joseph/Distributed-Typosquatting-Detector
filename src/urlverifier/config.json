@@ -8,7 +8,7 @@
 		}
 	},
 	"database": {
-		"host": "dtd-mysql",
+		"host": "dtd-database",
 		"port": "3306",
 		"database": "dtd",
 		"user": "dtd-urlverifier",

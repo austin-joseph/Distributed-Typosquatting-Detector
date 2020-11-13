@@ -2,7 +2,7 @@
     "logging": true,
     "max_allowed_tasks_per_update": 1,
     "database": {
-        "host": "dtd-mysql",
+        "host": "dtd-database",
         "port": "3306",
         "database": "dtd",
         "user": "dtd-typogenerator",

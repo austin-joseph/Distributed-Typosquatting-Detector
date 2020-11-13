@@ -104,5 +104,5 @@ if cnx == None:
 
 if __name__ == "__main__":
     # app.run(port=configFile["flask"]["port"], threaded=True)
-    #log("Server started on port {}".format(configFile["flask"]["port"]))
-    serve(app, listen='*:8080')
+    log("Server started on port {}".format(configFile["flask"]["port"]))
+    serve(app, listen='*:'+configFile["flask"]["port"])
